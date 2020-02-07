@@ -1,0 +1,10 @@
+FROM node:lts-slim
+
+RUN mkdir /app
+
+WORKDIR /app
+
+ADD package.json /app/package.json
+RUN yarn install
+
+EXPOSE 3000

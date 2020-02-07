@@ -1,0 +1,45 @@
+version: '3'
+services:
+  api:
+    build: ./api 
+    volumes:
+      - ./api:/app
+    command: "flask run --host 0.0.0.0"
+    depends_on:
+      - allure
+    networks:
+      - testsnetwork
+  web:
+    build: ./web 
+    volumes:
+      - ./web:/app
+      - node_modules:/app/node_modules
+    ports:
+      - "3000:3000"
+    links:
+        - api
+        - allure
+    depends_on:
+        - api
+        - allure
+    networks:
+        - testsnetwork  
+    command: "yarn start"
+  allure:
+    image: "frankescobar/allure-docker-service"
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 1
+      KEEP_HISTORY: "TRUE"
+    ports:
+      - "4040:4040"
+      - "5050:5050"
+    volumes:
+      - ./api/allure-results:/app/allure-results
+    networks:
+      - testsnetwork
+
+volumes: 
+  node_modules:
+
+networks:
+  testsnetwork:
